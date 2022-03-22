@@ -1,0 +1,30 @@
+.form {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  font-size: 1.25em;
+  grid-row-gap: 1em;
+}
+
+.form input {
+  margin-top: -1.5em;
+  height: 3em;
+  width: 60em;
+  text-align: center;
+  padding: 0;
+}
+
+.form button {
+  height: 3em;
+  width: 7em;
+  justify-self: center;
+}
+
+.form label {
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  background-color: lightgrey;
+  width: max-content;
+  padding: .5em;
+}

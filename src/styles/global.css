@@ -1,0 +1,13 @@
+.App {
+  width: 100%;
+}
+.container {
+  padding: 2em 2em;
+  height: 100%;
+}
+body {
+  letter-spacing: .05em;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
