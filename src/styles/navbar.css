@@ -1,15 +1,11 @@
 .Navbar {
   background-color: grey;
-  height: 10em;
+  height: 5em;
   padding: 0 2em;
   font-size: 1.15rem;
-}
-.Navbar span {
   display: flex;
-  justify-content: space-evenly;
   align-items: center;
-  width: 20rem;
-  height: 100%;
+  grid-column-gap: 2em;
 }
 .Navbar p{
   margin: 0;

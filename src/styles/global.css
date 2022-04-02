@@ -6,8 +6,10 @@
   height: 100%;
 }
 body {
-  letter-spacing: .05em;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+* {
+  letter-spacing: .05em;
 }

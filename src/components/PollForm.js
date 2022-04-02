@@ -1,40 +1,123 @@
-import { useState, useEffect } from 'react'
+import Select from './Select'
 import Input from './Input'
 import '../styles/form.css'
+import { newPollFields, updatePollFields } from '../helpers.js'
+
+import { useState, useEffect } from 'react'
+import { useForm, useFieldArray } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
 
 export default function PollForm({ type }){
-    const [fields,setFields] = useState([]);
-    const [options,setOptionsTotal] = useState(0);
+    const [formFields,setFields] = useState([]);
+    const [options,setOptionsTotal] = useState(2);
+
+    const validationSchema = Yup.object().shape({
+      subject: Yup.string().required('"Subject" is required'),
+      password: Yup.string().required('"Password" is required').min(6, 'Password must be 6 characters').oneOf([Yup.ref('confirmPassword')], 'Passwords must match'),
+      confirmPassword: Yup.string().required('"Confirm Password" is required').oneOf([Yup.ref('password')], 'Passwords must match'),
+      format: Yup.string().default('default'),
+      expires: Yup.number().typeError('"Expires" must be a valid number').positive().integer().default(5),
+      options: Yup.array().of(
+        Yup.object().shape({
+          description: Yup.string().typeError('"Option" invalid')
+        })
+      )
+    });
+    const formOptions = {resolver: yupResolver(validationSchema)}
+
+    const {
+      handleSubmit,
+      register,
+      control,
+      reset,
+      formState
+    } = useForm(formOptions)
+
+    const { errors } = formState;
+
+    const { fields, append, remove } = useFieldArray({name: 'options', control})
+
+    const [formErrors, setFormErrors] = useState({})
+
+    useEffect(()=>{
+      setFormErrors(errors);
+    },[errors])
 
     useEffect(()=>{
       type === 'newPoll' ?
-          setFields([
-            {name: "subject", label: "Subject", type: "text" },
-            {name: "author", label: "Author", type: "text" },
-            {name: "password", label: "Password", type: "password" },
-            {name: "confirmPassword", label: "Confirm Password", type: "password" },
-            {name: "expires", label: "Expires in...", type: "time" },
-            {name: "format", label: "Results Format", type: "text" }])
-        :
-          setFields([{name: "format", label: "Results Format", type: "text" }])
+          setFields(newPollFields) : setFields(updatePollFields);
+      setOptionsTotal(2);
       },[])
 
-    useEffect(()=>{
-      if(options > 0){
-        setFields([...fields,{name:`option${options}`,label: `Option ${options}`, type: 'text', focus: true}])
-      }
-    },[options])
+    useEffect(() => {
+       const oldVal = fields.length;
+       if (options > oldVal && oldVal < 8 || oldVal < 2) {
+           for (let i = oldVal; i < options; i++) {
+               append({description: ''});
+           }
+       } else {
+           for (let i = oldVal; i > options; i--) {
+               remove(i - 1);
+           }
+       }
+    }, [options]);
 
-    const increaseOptions = () => {
-      setOptionsTotal(options + 1)
+    const increaseOptions = (e) => {
+      e.preventDefault();
+      if(options < 8) setOptionsTotal(options + 1)
+    }
+
+    const decreaseOptions = (e) => {
+      e.preventDefault();
+      if(options > 2) setOptionsTotal(options - 1)
+    }
+
+    const onSubmit = (data) => {
+      console.log(data,options)
     }
 
     return(
-      <div className='form'>
-        { type === 'newPoll'  ?  <button onClick={increaseOptions}>Button</button> : ''}
-        {fields.map(x => {
-          return (<Input key={x.name} props={x} />)
+      <form className='form' onSubmit={handleSubmit(onSubmit)}>
+        { type === 'newPoll'  ?  (
+          <span>
+            <button onClick={increaseOptions}>Add Option</button>
+            <button onClick={decreaseOptions}>Delete Option</button>
+            <button type='submit'>Submit Form</button>
+          </span>
+        ) : ''}
+        {formFields.map(x => {
+          return (
+            x.type === 'select' ?
+              (<>
+                <Select
+                  key={x.name}
+                  props={x}
+                  register={register} />
+                <div className="is-invalid">{formErrors[x.name]?.message}</div>
+              </>)
+            :
+            (<>
+              <Input
+                key={x.name}
+                props={x}
+                register={register}/>
+              <div className="is-invalid">{formErrors[x.name]?.message}</div>
+            </>)
+          )
         })}
-      </div>
+        {fields.map((x,i) => {
+          return (
+            <Input
+              key={x.id}
+              props={{
+                type: 'text',
+                focus: true,
+                name:`options.${i}.description`,
+                label: `Option ${i+1}`}}
+              register={register} />
+          )
+        })}
+      </form>
     )
 }
