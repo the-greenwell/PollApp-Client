@@ -2,15 +2,22 @@ import Select from './Select'
 import Input from './Input'
 import '../styles/form.css'
 import { newPollFields, updatePollFields } from '../helpers.js'
+import { FormContext } from '../containers/HomeContainer'
+import { PollContext } from '../PollContext'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 
-export default function PollForm({ type }){
+export default function PollForm({ props }){
     const [formFields,setFields] = useState([]);
     const [options,setOptionsTotal] = useState(2);
+
+    const formProps = useContext(FormContext)
+    const [poll,setPoll] = useContext(PollContext).poll
+    const navigate = useNavigate();
 
     const validationSchema = Yup.object().shape({
       subject: Yup.string().required('"Subject" is required'),
@@ -20,7 +27,9 @@ export default function PollForm({ type }){
       expires: Yup.number().typeError('"Expires" must be a valid number').positive().integer().default(5),
       options: Yup.array().of(
         Yup.object().shape({
-          description: Yup.string().typeError('"Option" invalid')
+          description: Yup.string().typeError('"Option" invalid').test('description', 'This field is required', (opt) => {
+            return opt.trim() ? true : false;
+          })
         })
       )
     });
@@ -33,22 +42,15 @@ export default function PollForm({ type }){
       reset,
       formState
     } = useForm(formOptions)
-
     const { errors } = formState;
-
     const { fields, append, remove } = useFieldArray({name: 'options', control})
 
-    const [formErrors, setFormErrors] = useState({})
 
     useEffect(()=>{
-      setFormErrors(errors);
-    },[errors])
-
-    useEffect(()=>{
-      type === 'newPoll' ?
+      formProps.type === 'newPoll' ?
           setFields(newPollFields) : setFields(updatePollFields);
       setOptionsTotal(2);
-      },[])
+    },[])
 
     useEffect(() => {
        const oldVal = fields.length;
@@ -73,20 +75,21 @@ export default function PollForm({ type }){
       if(options > 2) setOptionsTotal(options - 1)
     }
 
-    const onSubmit = (data) => {
-      console.log(data,options)
+    const onSubmit = async (data) => {
+      setPoll(data)
+      navigate('/poll')
     }
 
     return(
       <form className='form' onSubmit={handleSubmit(onSubmit)}>
-        { type === 'newPoll'  ?  (
+        { formProps.type === 'newPoll'  ?  (
           <span>
             <button onClick={increaseOptions}>Add Option</button>
             <button onClick={decreaseOptions}>Delete Option</button>
             <button type='submit'>Submit Form</button>
           </span>
         ) : ''}
-        {formFields.map(x => {
+        {formFields.map((x,i) => {
           return (
             x.type === 'select' ?
               (<>
@@ -94,7 +97,7 @@ export default function PollForm({ type }){
                   key={x.name}
                   props={x}
                   register={register} />
-                <div className="is-invalid">{formErrors[x.name]?.message}</div>
+                <div className="is-invalid" key={`error-${i}`}>{errors[x.name]?.message}</div>
               </>)
             :
             (<>
@@ -102,20 +105,22 @@ export default function PollForm({ type }){
                 key={x.name}
                 props={x}
                 register={register}/>
-              <div className="is-invalid">{formErrors[x.name]?.message}</div>
             </>)
           )
         })}
         {fields.map((x,i) => {
           return (
-            <Input
-              key={x.id}
-              props={{
-                type: 'text',
-                focus: true,
-                name:`options.${i}.description`,
-                label: `Option ${i+1}`}}
-              register={register} />
+            <>
+              <Input
+                key={x.id}
+                props={{
+                  type: 'text',
+                  focus: true,
+                  name:`options.${i}.description`,
+                  label: `Option ${i+1}`}}
+                register={register} />
+              <div className="is-invalid" key={`error-${i}`}>{errors.options?.[i]?.description?.message}</div>
+            </>
           )
         })}
       </form>

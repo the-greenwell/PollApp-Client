@@ -1,7 +1,10 @@
-export default function NavLink({linkHref,linkText}){
+import { Link } from 'react-router-dom'
+
+
+export default function NavLink({props}){
   return(
     <>
-      <a href={linkHref}>{linkText}</a>
+      <Link to={props.linkHref}>{props.linkText}</Link>
     </>
   )
 }

@@ -1,4 +1,4 @@
-export default function Input({ props, register}){
+export default function Input({ props, register }){
   return(
     <div className='input-group'>
       <label htmlFor={props.name}>{props.label}</label>
