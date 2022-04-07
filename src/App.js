@@ -18,7 +18,7 @@ function App() {
             <Routes>
               <Route path='/' element={<HomeContainer />} >
                 <Route path='newpoll' element={<PollForm />} />
-                <Route path='poll' element={<PollContainer />} />
+                <Route path='poll/:id' element={<PollContainer />} />
               </Route>
             </Routes>
       </PollProvider>

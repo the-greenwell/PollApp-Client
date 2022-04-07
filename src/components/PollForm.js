@@ -4,6 +4,7 @@ import '../styles/form.css'
 import { newPollFields, updatePollFields } from '../helpers.js'
 import { FormContext } from '../containers/HomeContainer'
 import { PollContext } from '../PollContext'
+import PollService from '../poll.service.js'
 
 import { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -75,9 +76,15 @@ export default function PollForm({ props }){
       if(options > 2) setOptionsTotal(options - 1)
     }
 
-    const onSubmit = async (data) => {
-      setPoll(data)
-      navigate('/poll')
+    const onSubmit = (data) => {
+      console.log(data.expires)
+      // PollService.newPoll(data).then((createdPoll) => {
+      //   setPoll(createdPoll.poll)
+      //   navigate('/poll/'+createdPoll.poll._id)
+      // }).catch((err)=>{
+      //   console.log(err)
+      //   navigate('/newpoll')
+      // })
     }
 
     return(
@@ -92,20 +99,22 @@ export default function PollForm({ props }){
         {formFields.map((x,i) => {
           return (
             x.type === 'select' ?
-              (<>
+              (
+                <>
                 <Select
                   key={x.name}
                   props={x}
                   register={register} />
                 <div className="is-invalid" key={`error-${i}`}>{errors[x.name]?.message}</div>
-              </>)
+                </>
+              )
             :
-            (<>
+            (
               <Input
                 key={x.name}
                 props={x}
                 register={register}/>
-            </>)
+            )
           )
         })}
         {fields.map((x,i) => {

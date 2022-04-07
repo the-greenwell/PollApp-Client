@@ -1,0 +1,18 @@
+
+.pollContainer {
+  display: grid;
+  text-align: center;
+  grid-gap: 5em;
+}
+
+.pollOptions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  grid-gap: 2em;
+}
+
+.pollContainer button {
+  height: 3rem;
+  width: 15rem;
+}
