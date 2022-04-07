@@ -9,14 +9,14 @@
   margin: 0;
 }
 
-.pollOptions {
+.pollContainer button {
+  height: 3rem;
+  width: 15rem;
+}
+
+.options{
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   grid-gap: 1rem;
-}
-
-.pollContainer button {
-  height: 3rem;
-  width: 15rem;
 }

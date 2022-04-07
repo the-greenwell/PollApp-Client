@@ -3,6 +3,7 @@ import HomeContainer from './containers/HomeContainer'
 import InfoContainer from './containers/InfoContainer'
 import PollForm from './components/PollForm'
 import PollContainer from './containers/PollContainer'
+import ResultsContainer from './containers/ResultsContainer'
 
 
 import {PollProvider} from './PollContext'
@@ -19,6 +20,7 @@ function App() {
               <Route path='/' element={<HomeContainer />} >
                 <Route path='newpoll' element={<PollForm />} />
                 <Route path='poll/:id' element={<PollContainer />} />
+                <Route path='results/:id' element={<ResultsContainer />} />
               </Route>
             </Routes>
       </PollProvider>

@@ -5,25 +5,27 @@ import ShareLink from '../components/ShareLink'
 import Option from '../components/Option'
 import CountDown from '../components/CountDown'
 import '../styles/poll.css'
+import { useNavigate } from 'react-router-dom'
 
 import { capitalize, formatTime } from '../helpers.js'
 
 import moment from 'moment'
 import { useParams } from 'react-router-dom'
 
-export default function PollContainer({props}){
+export default function PollContainer(){
   const { loggedIn, poll } = useContext(PollContext)
   const [isLoggedIn, setLoggedIn] = loggedIn;
   const [pollValue, setPollValue] = poll;
 
   const params = useParams();
+  const navigate = useNavigate();
 
   const voteHandler = (optionId) => {
-    PollService.castVote(params.id,optionId).then((data)=>{
-      setPollValue({...pollValue, options: data.updatedOptions})
+    PollService.castVote(pollValue._id,optionId).then((data)=>{
+      setPollValue({...pollValue, options: data.updatedOptions});
+      navigate('/results/' + pollValue._id)
     })
   }
-
   const formatCountdown = () => {
     let diffTime = moment(pollValue.expires).valueOf() - moment().valueOf()
     let duration = moment.duration(diffTime, 'milliseconds')
@@ -31,6 +33,14 @@ export default function PollContainer({props}){
       return {...formatTime(duration._milliseconds)}
     }
   }
+  const [timeLeft, setTimeLeft] = useState(formatCountdown());
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTimeLeft(formatCountdown());
+    }, 1000);
+    return () => clearTimeout(timer);
+  });
 
   useEffect(()=>{
     if(Object.keys(pollValue).length === 0) {
@@ -40,23 +50,13 @@ export default function PollContainer({props}){
     }
   },[])
 
-  const [timeLeft, setTimeLeft] = useState(formatCountdown());
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setTimeLeft(formatCountdown());
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  });
-
   return(
     <div className='pollContainer'>
       <h1> {pollValue.subject && capitalize(pollValue.subject)} </h1>
 
       <CountDown props={timeLeft}/>
 
-      <div className='pollOptions'>
+      <div className='options'>
         {pollValue?.options?.map(opt => {
           return <Option key={opt._id} props={{option:opt,voteHandler:voteHandler}} />
         })}
