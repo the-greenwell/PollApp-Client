@@ -10,6 +10,7 @@ import { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup';
+import moment from 'moment'
 import * as Yup from 'yup';
 
 export default function PollForm({ props }){
@@ -76,15 +77,19 @@ export default function PollForm({ props }){
       if(options > 2) setOptionsTotal(options - 1)
     }
 
+    const dateFormat = (minutes) => {
+      return moment().add(minutes, 'minutes').toDate()
+    }
+
     const onSubmit = (data) => {
-      console.log(data.expires)
-      // PollService.newPoll(data).then((createdPoll) => {
-      //   setPoll(createdPoll.poll)
-      //   navigate('/poll/'+createdPoll.poll._id)
-      // }).catch((err)=>{
-      //   console.log(err)
-      //   navigate('/newpoll')
-      // })
+      const formatted = {...data, expires: dateFormat(data.expires)}
+      PollService.newPoll(formatted).then(async (createdPoll) => {
+        setPoll(createdPoll.poll)
+        navigate('/poll/'+createdPoll.poll._id)
+      }).catch((err)=>{
+        console.log(err)
+        navigate('/newpoll')
+      })
     }
 
     return(

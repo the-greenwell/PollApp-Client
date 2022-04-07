@@ -2,14 +2,18 @@
 .pollContainer {
   display: grid;
   text-align: center;
-  grid-gap: 5em;
+  grid-gap: 4rem;
+}
+
+.pollContainer * {
+  margin: 0;
 }
 
 .pollOptions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
-  grid-gap: 2em;
+  justify-content: center;
+  grid-gap: 1rem;
 }
 
 .pollContainer button {

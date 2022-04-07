@@ -8,4 +8,20 @@ const newPollFields = [
 const updatePollFields = [
   {name: "format", label: "Results Format", type: "text" }]
 
-module.exports = { newPollFields, updatePollFields }
+const capitalize = ([ first, ...rest ]) => {
+  return first.toLocaleUpperCase() + rest.join('')}
+
+const formatTime = (duration) => {
+  let seconds = Math.floor((duration / 1000) % 60),
+      minutes = Math.floor((duration / (1000 * 60)) % 60),
+      hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+  hours = (hours < 10) ? "0" + hours : hours;
+  minutes = (minutes < 10) ? "0" + minutes : minutes;
+  seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+  const time = {hours: hours, minutes: minutes, seconds: seconds};
+  return time;
+}
+
+module.exports = { newPollFields, updatePollFields, capitalize, formatTime }
