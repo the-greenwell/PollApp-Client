@@ -3,7 +3,7 @@ export default function ShareLink({props}){
     e.preventDefault();
     navigator.clipboard.writeText(props.shareLink)
   }
-  const check = window.location.pathname.split('/')[1];
+  const check = window.location.pathname.split('/').at(1);
 
   return (
     <div className='shareLink'>
