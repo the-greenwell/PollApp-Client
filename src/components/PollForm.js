@@ -10,7 +10,6 @@ import { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup';
-import moment from 'moment'
 import * as Yup from 'yup';
 
 export default function PollForm({ props }){
@@ -18,7 +17,9 @@ export default function PollForm({ props }){
     const [options,setOptionsTotal] = useState(2);
 
     const formProps = useContext(FormContext)
-    const [poll,setPoll] = useContext(PollContext).poll
+    const { poll, error } = useContext(PollContext);
+    const [pollValue, setPoll] = poll;
+    const [errorMessage, setError] = error;
     const navigate = useNavigate();
 
     const validationSchema = Yup.object().shape({
@@ -78,7 +79,8 @@ export default function PollForm({ props }){
     }
 
     const dateFormat = (minutes) => {
-      return moment().add(minutes, 'minutes').toDate()
+      const now = new Date();
+      return new Date(now.getTime() + minutes*60000)
     }
 
     const onSubmit = (data) => {
@@ -87,7 +89,6 @@ export default function PollForm({ props }){
         setPoll(createdPoll.poll)
         navigate('/poll/'+createdPoll.poll._id)
       }).catch((err)=>{
-        console.log(err)
         navigate('/newpoll')
       })
     }
@@ -106,11 +107,11 @@ export default function PollForm({ props }){
             x.type === 'select' ?
               (
                 <>
-                <Select
-                  key={x.name}
-                  props={x}
-                  register={register} />
-                <div className="is-invalid" key={`error-${i}`}>{errors[x.name]?.message}</div>
+                  <Select
+                    key={x.name}
+                    props={x}
+                    register={register} />
+                  <div className="is-invalid" key={`error-${i}`}>{errors[x.name]?.message}</div>
                 </>
               )
             :

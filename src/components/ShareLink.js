@@ -3,9 +3,11 @@ export default function ShareLink({props}){
     e.preventDefault();
     navigator.clipboard.writeText(props.shareLink)
   }
-  return(
+  const check = window.location.pathname.split('/')[1];
+
+  return (
     <div className='shareLink'>
-      <p>Shareable link: <a href={props.shareLink} onClick={(e)=>handleClick(e)}>{props.shareLink}</a></p>
+      <p><a href={props.shareLink} onClick={(e)=>handleClick(e)}>{`Click here to copy the ${check} link`}</a></p>
     </div>
   )
 }

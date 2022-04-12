@@ -1,3 +1,5 @@
+
+
 const newPollFields = [
   {name: "subject", label: "Subject *", type: "text", focus: true},
   {name: "password", label: "Password", type: "password" },
@@ -24,4 +26,8 @@ const formatTime = (duration) => {
   return time;
 }
 
-module.exports = { newPollFields, updatePollFields, capitalize, formatTime }
+const removeLS = () => {
+  localStorage.removeItem(window.location.pathname.split('/').at(-1))
+}
+
+module.exports = { newPollFields, updatePollFields, capitalize, formatTime, removeLS }
